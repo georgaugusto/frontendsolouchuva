@@ -1,16 +1,19 @@
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useContext } from 'react';
 import { FiArrowLeft, FiMail, FiUser, FiLock } from 'react-icons/fi';
-import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import axios from 'axios';
 
-//import { useToast } from '../../hooks/toast';
+import ToastContext from '../../contexts/toast';
 
-import logoImg from '../../assets/logo.svg';
-
+import { Input } from '../../components/Input';
 import Button from '../../components/Button';
 
+import logoImg2x from '../../assets/logoSC@2x.svg';
+
 import { Container, Content, AnimationContainer, Background } from './styles';
-import { Input } from '../../components/Input';
 
 interface SignUpFormData {
   name: string;
@@ -18,67 +21,86 @@ interface SignUpFormData {
   password: string;
 }
 
+const signUpFormSchema = yup.object().shape({
+  name: yup.string().required('Nome obrigatório'),
+  email: yup
+    .string()
+    .required('E-mail obrigatório')
+    .email('Digite um e-mail válido'),
+  password: yup.string().min(6, 'No mínimo 6 dígitos'),
+});
+
 function SignUp() {
-  //const { addToast } = useToast();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    resolver: yupResolver(signUpFormSchema),
+  });
 
-  //const handleSubmit = useCallback(
-  //async (data: SignUpFormData) => {
-  //try {
-  //formRef.current?.setErrors({});
+  const { addToast } = useContext(ToastContext);
+  const navigate = useNavigate();
 
-  //const schema = Yup.object().shape({
-  //name: Yup.string().required('Nome obrigatório'),
-  //email: Yup.string()
-  //.required('E-mail obrigatório')
-  //.email('Digite um e-mail válido'),
-  //password: Yup.string().min(6, 'No mínimo 6 dígitos'),
-  //});
+  const createUser = useCallback(
+    async (data: SignUpFormData) => {
+      await axios
+        .post(`${process.env.REACT_APP_API_URL}/users`, data)
+        .then(() => {
+          navigate('/');
 
-  //await schema.validate(data, {
-  //abortEarly: false,
-  //});
+          addToast({
+            type: 'success',
+            title: 'Cadastro realizado!',
+            description: 'Você já pode fazer seu logon',
+          });
+        })
+        .catch(() => {
+          addToast({
+            type: 'error',
+            title: 'Erro no cadastro',
+            description: 'Ocorreu um erro ao fazer o cadastro, tente novamente',
+          });
+        });
+    },
+    [addToast, navigate],
+  );
 
-  //await api.post('/users', data);
-
-  //history.push('/');
-
-  //addToast({
-  //type: 'success',
-  //title: 'Cadastro realizado!',
-  //description: 'Você já pode fazer seu logon',
-  //});
-  //} catch (err) {
-  //if (err instanceof Yup.ValidationError) {
-  //const errors = getValidationError(err);
-
-  //formRef.current?.setErrors(errors);
-
-  //return;
-  //}
-
-  //addToast({
-  //type: 'error',
-  //title: 'Erro no cadastro',
-  //description: 'Ocorreu um erro ao fazer o cadastro, tente novamente',
-  //});
-  //}
-  //},
-  //[addToast, history],
-  //);
+  const handleCreateUser: SubmitHandler<SignUpFormData> = async data => {
+    await createUser(data);
+  };
 
   return (
     <Container>
       <Background />
       <Content>
         <AnimationContainer>
-          <img src={logoImg} alt="logo Sol ou Chuva" />
+          <img src={logoImg2x} alt="logo Sol ou Chuva" />
 
-          <form>
+          <form onSubmit={handleSubmit(handleCreateUser)}>
             <h1>Faça seu cadastro</h1>
 
-            <Input name="name" placeholder="Nome" />
-            <Input name="email" placeholder="E-mail" />
-            <Input name="password" type="password" placeholder="Senha" />
+            <Input
+              type="text"
+              placeholder="Nome"
+              Icon={FiUser}
+              error={errors.name}
+              {...register('name')}
+            />
+            <Input
+              type="text"
+              placeholder="E-mail"
+              Icon={FiMail}
+              error={errors.email}
+              {...register('email')}
+            />
+            <Input
+              type="password"
+              placeholder="Senha"
+              Icon={FiLock}
+              error={errors.password}
+              {...register('password')}
+            />
             <Button type="submit">Cadastrar</Button>
           </form>
 

@@ -5,13 +5,13 @@ import { ToastContextProvider } from './toast';
 
 function GlobalContextProvider({ children }: JSX.ElementChildrenAttribute) {
   return (
-    <AuthContextProvider>
-      <ToastContextProvider>
+    <ToastContextProvider>
+      <AuthContextProvider>
         <LayoutContextProvider>
           <HeaderTitleContextProvider>{children}</HeaderTitleContextProvider>
         </LayoutContextProvider>
-      </ToastContextProvider>
-    </AuthContextProvider>
+      </AuthContextProvider>
+    </ToastContextProvider>
   );
 }
 

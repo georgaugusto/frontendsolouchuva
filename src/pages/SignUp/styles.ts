@@ -11,20 +11,29 @@ export const Container = styled.div`
 `;
 
 export const Content = styled.div`
+  width: 100%;
+  max-width: 43.75rem;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-
   place-content: center;
 
-  width: 100%;
-  max-width: 700px;
+  background-color: var(--light1);
+
+  border-radius: 2rem 0 0 2rem;
+
+  z-index: 1;
+
+  @media (max-width: 768px) {
+    border-radius: 0;
+  }
 `;
 
 const appeatFromRight = keyframes`
   from {
     opacity: 0;
-    transform: translateX(50px);
+    transform: translateX(-3.125px);
   }
   to {
     opacity: 1;
@@ -39,32 +48,27 @@ export const AnimationContainer = styled.div`
 
   animation: ${appeatFromRight} 1s;
 
+  img {
+    width: 20rem;
+  }
+
   form {
-    margin: 80px 0;
-    width: 340px;
+    margin: 5rem 0;
+    width: 21.25rem;
     text-align: center;
 
     h1 {
-      margin-bottom: 24px;
-    }
-
-    a {
-      color: #f4ede8;
-      display: block;
-      margin-top: 24px;
-      text-decoration: none;
-      transition: color 0.2s;
-
-      &:hover {
-        color: ${shade(0.2, '#F4EDE8')};
-      }
+      font-family: Mulish;
+      margin-bottom: 1.5rem;
+      color: var(--secundaria0);
     }
   }
 
   > a {
-    color: #b0c6a1;
+    font-family: Mulish;
+    color: var(--primaria1);
     display: block;
-    margin-top: 24px;
+    margin-top: 1.5rem;
     text-decoration: none;
     transition: color 0.2s;
 
@@ -72,11 +76,11 @@ export const AnimationContainer = styled.div`
     align-items: center;
 
     &:hover {
-      color: ${shade(0.4, '#B0C6A1')};
+      color: ${shade(0.4, `#5e9778`)};
     }
 
     svg {
-      margin-right: 16px;
+      margin-right: 1rem;
     }
   }
 `;
@@ -85,4 +89,7 @@ export const Background = styled.div`
   flex: 1;
   background: url(${signUpBackgroundImg}) no-repeat center;
   background-size: cover;
+
+  margin-right: -2rem;
+  z-index: 0;
 `;

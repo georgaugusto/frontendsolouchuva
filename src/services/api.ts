@@ -1,3 +1,4 @@
+/*eslint-disable no-console */
 import axios, { AxiosError } from 'axios';
 
 interface FailedRequest {
@@ -35,8 +36,6 @@ api.interceptors.response.use(
             })
             .then(response => {
               newToken = response.data;
-
-              //console.log(response.data);
 
               localStorage.setItem('@SolouChuva:token', response.data);
 

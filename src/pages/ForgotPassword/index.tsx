@@ -1,85 +1,98 @@
-import React, { useRef, useCallback, useState } from 'react';
-import { FiLogIn, FiMail } from 'react-icons/fi';
-import * as Yup from 'yup';
+import { useCallback, useState, useContext } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { Link } from 'react-router-dom';
+import { FiLogIn, FiMail } from 'react-icons/fi';
+import axios from 'axios';
 
-import logoImg from '../../assets/logo.svg';
+import ToastContext from '../../contexts/toast';
 
+import { Input } from '../../components/Input';
 import Button from '../../components/Button';
 
+import logoImg2x from '../../assets/logoSC@2x.svg';
+
 import { Container, Content, AnimationContainer, Background } from './styles';
-import { Input } from '../../components/Input';
 
 interface ForgotPasswordFormData {
   email: string;
 }
 
+const forgotPasswordFormSchema = yup.object().shape({
+  email: yup
+    .string()
+    .required('E-mail obrigatório')
+    .email('Digite um e-mail válido'),
+});
+
 function ForgotPassword() {
-  //const [loading, setLoading] = useState(false);
-  //const formRef = useRef<FormHandles>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ForgotPasswordFormData>({
+    resolver: yupResolver(forgotPasswordFormSchema),
+  });
 
-  //const { addToast } = useToast();
+  const [loading, setLoading] = useState(false);
 
-  //const handleSubmit = useCallback(
-  //async (data: ForgotPasswordFormData) => {
-  //try {
-  //setLoading(true);
-  //formRef.current?.setErrors({});
+  const { addToast } = useContext(ToastContext);
 
-  //const schema = Yup.object().shape({
-  //email: Yup.string()
-  //.required('E-mail obrigatório')
-  //.email('Digite um e-mail válido'),
-  //});
+  const forgotPasswordUser = useCallback(
+    async (data: ForgotPasswordFormData) => {
+      setLoading(true);
+      await axios
+        .post(`${process.env.REACT_APP_API_URL}/password/forgot`, data)
+        .then(() => {
+          addToast({
+            type: 'success',
+            title: 'E-mail de recuperação enviado.',
+            description:
+              'Enviamos um e-mail para confirmar a recuperarção de senha, cheque sua caixa de entrada.',
+          });
+        })
+        .catch(() => {
+          addToast({
+            type: 'error',
+            title: 'Erro na recuperação de senha',
+            description:
+              'Ocorreu um erro ao tentar realizar a recuperação de senha, tente novamente',
+          });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    [addToast],
+  );
 
-  //await schema.validate(data, {
-  //abortEarly: false,
-  //});
-
-  //await api.post('/password/forgot', {
-  //email: data.email,
-  //});
-
-  //addToast({
-  //type: 'success',
-  //title: 'E-mail de recuperação enviado.',
-  //description:
-  //'Enviamos um e-mail para confirmar a recuperarção de senha, cheque sua caixa de entrada.',
-  //});
-  //} catch (err) {
-  //if (err instanceof Yup.ValidationError) {
-  //const errors = getValidationError(err);
-
-  //formRef.current?.setErrors(errors);
-
-  //return;
-  //}
-
-  //addToast({
-  //type: 'error',
-  //title: 'Erro na recuperação de senha',
-  //description:
-  //'Ocorreu um erro ao tentar realizar a recuperação de senha, tente novamente',
-  //});
-  //} finally {
-  //setLoading(false);
-  //}
-  //},
-  //[addToast],
-  //);
+  const handleforgotPasswordUser: SubmitHandler<
+    ForgotPasswordFormData
+  > = async data => {
+    await forgotPasswordUser(data);
+  };
 
   return (
     <Container>
       <Content>
         <AnimationContainer>
-          <img src={logoImg} alt="logo Sol ou Chuva" />
+          <img src={logoImg2x} alt="logo Sol ou Chuva" />
 
-          <form>
+          <form onSubmit={handleSubmit(handleforgotPasswordUser)}>
             <h1>Recuperar senha</h1>
 
-            <Input name="email" placeholder="E-mail" />
+            <Input
+              type="text"
+              placeholder="E-mail"
+              Icon={FiMail}
+              error={errors.email}
+              {...register('email')}
+            />
 
-            <Button type="submit">Recuperar</Button>
+            <Button loading={loading} type="submit">
+              Recuperar
+            </Button>
           </form>
 
           <Link to="/">

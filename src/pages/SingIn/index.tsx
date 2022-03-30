@@ -1,17 +1,22 @@
 import { useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { FiMail, FiLock, FiLogIn } from 'react-icons/fi';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
-import { FiMail, FiLock, FiLogIn } from 'react-icons/fi';
 
 import AuthContext from '../../contexts/auth';
-import ToastContext from '../../contexts/toast';
 import Button from '../../components/Button';
 import { Input } from '../../components/Input';
-import logoImg from '../../assets/logo.svg';
+
+import logoImg2x from '../../assets/logoSC@2x.svg';
 
 import { Container, Content, AnimationContainer, Background } from './styles';
+
+interface SingInFormData {
+  email: string;
+  password: string;
+}
 
 const signInFormSchema = yup.object().shape({
   email: yup
@@ -27,11 +32,10 @@ function SingIn() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<SingInFormData>({
     resolver: yupResolver(signInFormSchema),
   });
 
-  const { addToast } = useContext(ToastContext);
   const { signIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -40,28 +44,28 @@ function SingIn() {
     if (token) navigate('/dashboard');
   }, [navigate]);
 
-  const handleSignIn = async (values: any) => {
+  const signInUser = async (values: SingInFormData) => {
     const data = {
       email: values.email,
       password: values.password,
     };
 
-    addToast({
-      type: 'error',
-      title: 'Erro na autenticação',
-      description: 'Ocorreu um erro ao fazer login, cheque as credenciais',
-    });
-
     await signIn(data);
+  };
+
+  const handleforgotSignIn: SubmitHandler<SingInFormData> = async data => {
+    await signInUser(data);
   };
 
   return (
     <Container>
       <Content>
         <AnimationContainer>
-          <img src={logoImg} alt="logo Sol ou Chuva" />
+          <img src={logoImg2x} alt="logo Sol ou Chuva" />
 
-          <form onSubmit={handleSubmit(handleSignIn)}>
+          <form onSubmit={handleSubmit(handleforgotSignIn)}>
+            <h1>Faça seu logon</h1>
+
             <Input
               type="text"
               placeholder="E-mail"

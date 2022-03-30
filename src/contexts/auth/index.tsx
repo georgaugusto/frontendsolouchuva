@@ -4,6 +4,7 @@ import {
   createContext,
   ReactNode,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useState,
@@ -11,12 +12,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 import { api } from '../../services/api';
-
-//interface UserProps {
-//email: string;
-//permissions: string[];
-//roles: string[];
-//}
+import ToastContext from '../toast';
 
 interface UserProps {
   email: string;
@@ -44,7 +40,7 @@ const authChannel = new BroadcastChannel('auth');
 function AuthContextProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps>();
   const navigate = useNavigate();
-
+  const { addToast } = useContext(ToastContext);
   const isAuthenticated = !!user;
 
   useEffect(() => {
@@ -67,8 +63,6 @@ function AuthContextProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const token = localStorage.getItem('@SolouChuva:token');
 
-    //console.log(token);
-
     if (token) {
       api
         .get('/profile', {
@@ -79,8 +73,6 @@ function AuthContextProvider({ children }: AuthProviderProps) {
         .then(response => {
           const { email } = response.data;
           setUser({ email });
-          //const { email, permissions, roles } = response.data;
-          //setUser({ email, permissions, roles });
         })
         .catch(() => {
           window.localStorage.clear();
@@ -99,31 +91,27 @@ function AuthContextProvider({ children }: AuthProviderProps) {
           password,
         });
 
-        const { refresh, permissions, roles } = response.data;
+        const { refresh } = response.data;
 
         localStorage.setItem('@SolouChuva:token', refresh);
-
-        //localStorage.setItem('reactauth.token', token);
-        //localStorage.setItem('reactauth.refreshToken', refreshToken);
 
         setUser({
           email,
         });
-
-        //setUser({
-        //email,
-        //permissions,
-        //roles,
-        //});
 
         api.defaults.headers.common.Authorization = `Bearer ${refresh}`;
 
         navigate('/dashboard', { replace: true });
       } catch (err) {
         console.log(err);
+        addToast({
+          type: 'error',
+          title: 'Erro na autenticação',
+          description: 'Ocorreu um erro ao fazer login, cheque as credenciais',
+        });
       }
     },
-    [navigate],
+    [navigate, addToast],
   );
 
   const contextValue = useMemo(

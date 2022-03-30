@@ -5,16 +5,17 @@ interface ContainerProps {
 }
 
 export const Container = styled.div<ContainerProps>`
-  background: var(--light0);
-  border-radius: 0.5rem;
-  padding: 0.75rem;
   width: 100%;
-
-  border: 0.125rem solid var(--light2);
-  color: var(--secundaria3);
 
   display: flex;
   align-items: center;
+
+  background: var(--light0);
+  color: var(--secundaria3);
+  border: 0.125rem solid var(--light2);
+  border-radius: 0.5rem;
+
+  padding: 0.75rem;
 
   & + div {
     margin-top: 0.125rem;
@@ -28,9 +29,15 @@ export const Container = styled.div<ContainerProps>`
 
   input {
     flex: 1;
+
+    font-family: Mulish;
+    font-style: normal;
+    font-size: 1rem;
+
     background: var(--light0);
-    border: 0;
     color: var(--secundaria2);
+
+    border: 0;
     outline: 0;
   }
 
@@ -49,7 +56,7 @@ export const Container = styled.div<ContainerProps>`
 export const ErrorMessage = styled.div<ContainerProps>`
   display: flex;
 
-  padding-bottom: 2.2rem;
+  padding-bottom: 1rem;
   opacity: 0;
 
   span {
