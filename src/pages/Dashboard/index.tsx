@@ -1,8 +1,6 @@
 /*eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { useContext, useEffect, useMemo, useState } from 'react';
-import decode from 'jwt-decode';
-import axios from 'axios';
 import {
   FiWind,
   FiSun,
@@ -14,7 +12,10 @@ import {
   FiTrendingUp,
 } from 'react-icons/fi';
 import 'pure-react-carousel/dist/react-carousel.es.css';
-import AuthContext from '../../contexts/auth';
+import axios from 'axios';
+
+import HeaderTitleContext from '../../contexts/headerTitle';
+import UserIdentificationContext from '../../contexts/userIdentification';
 
 import {
   Container,
@@ -34,7 +35,22 @@ import AlertBox from '../../components/DiseaseAlertBox';
 import WeatherBox from '../../components/WeatherBox';
 import WeatherCarousel from '../../components/Carousel';
 import AsyncSingleSelect from '../../components/AsyncSingleSelect';
-import HeaderTitleContext from '../../contexts/headerTitle';
+
+interface IWeatherStationData {
+  temperature: number;
+  airHumidity: number;
+  thermalSensation: number;
+  soilMoisture: number;
+  rainfallIndex: number;
+  leafWetness: number;
+  luminosity: number;
+  ultravioletIndex: number;
+  atmosphericPressure: number;
+  windSpeed: number;
+  windDirection: number;
+  altitude: number;
+  lastRead: number;
+}
 
 interface IOpenWeatherMapData {
   coord: {
@@ -93,7 +109,8 @@ interface IOpenWeatherMapData {
 }
 
 function Dashboard() {
-  const { user } = useContext(AuthContext);
+  const user = useContext(UserIdentificationContext);
+  const token = localStorage.getItem('@SolouChuva:token');
   const { setHeaderTitle } = useContext(HeaderTitleContext);
   const [openWeatherMapApi, setOpenWeatherMapApiData] =
     useState<IOpenWeatherMapData>();
@@ -102,6 +119,8 @@ function Dashboard() {
   const [openWeatherMapApiIcon, setOpenWeatherMapApiIcon] = useState<any>();
   const [requestError, setRequestError] = useState<boolean>(false);
   const [isOnline, setisOnline] = useState<boolean>(false);
+
+  const [weatherStationData, setWeatherStationData] = useState<any>({});
 
   const [selectedStation, setSelectedStation] = useState({
     value: '1',
@@ -137,27 +156,77 @@ function Dashboard() {
         setOpenWeatherMapApiIcon(
           `https://openweathermap.org/img/wn/${response.data.weather[0].icon}.png`,
         );
+
+        const getRain = Object.values(response.data?.rain);
+        const rain = getRain[1] ? getRain[1] : getRain[0];
+
         setOpenWeatherMapApiData(response.data);
+        setWeatherStationData({
+          temperature: response.data.main.temp,
+          airHumidity: response.data.main.humidity,
+          thermalSensation: response.data.main.feels_like,
+          soilMoisture: 0,
+          rainfallIndex: getRain ? rain : 0,
+          leafWetness: 0,
+          luminosity: 0,
+          ultravioletIndex: 0,
+          atmosphericPressure: response.data.main.grnd_level,
+          windSpeed: response.data.wind.speed,
+          altitude: 0,
+          lastRead: response.data.dt,
+        });
       } catch (error) {
         setRequestError(true);
       }
     }
-    getWeatherDataByCity();
-  }, []);
+    if (Number(selectedStation.value) === 1) getWeatherDataByCity();
+  }, [selectedStation.value]);
+
+  useEffect(() => {
+    async function getWeatherStationData() {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/weatherstation`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        setWeatherStationData({
+          temperature: response.data.dht22Temperature,
+          airHumidity: response.data.dht22Moisture,
+          thermalSensation: response.data.thermalSensation,
+          soilMoisture: response.data.csmsv12Soil,
+          rainfallIndex: response.data.pluviometer,
+          leafWetness: response.data.mhrdWetting,
+          luminosity: response.data.bh1750Brightness,
+          ultravioletIndex: response.data.uvm30aIndexUv,
+          atmosphericPressure: response.data.bmp280Pressure,
+          windSpeed: response.data.anemometer,
+          altitude: response.data.bmp280Altitude,
+          lastRead: response.data.timestamp,
+        });
+      } catch (error) {
+        setRequestError(true);
+      }
+    }
+    if (Number(selectedStation.value) === 0) getWeatherStationData();
+  }, [selectedStation.value]);
 
   const formatTime = useMemo(() => {
     return Intl.DateTimeFormat('pt-BR', {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-    }).format(openWeatherMapApi?.dt);
-  }, []);
+    }).format(weatherStationData.lastRead);
+  }, [weatherStationData.lastRead]);
 
   const temperatureAlert = useMemo(() => {
-    if (openWeatherMapApi?.main.feels_like) {
+    if (weatherStationData.thermalSensation) {
       return (
         <>
-          {openWeatherMapApi?.main.feels_like > 54 && (
+          {weatherStationData.thermalSensation > 54 && (
             <AlertBox
               title="Sensação térmica superior à 54°C - Perigo Extremo"
               description="Hipertermia e câimbras de calor iminentes"
@@ -165,8 +234,8 @@ function Dashboard() {
               color="danger"
             />
           )}
-          {openWeatherMapApi?.main.feels_like > 41 &&
-            openWeatherMapApi?.main.feels_like <= 54 && (
+          {weatherStationData.thermalSensation > 41 &&
+            weatherStationData.thermalSensation <= 54 && (
               <AlertBox
                 title="Sensação térmica superior à 41°C - Perigo"
                 description="Hipertermia e câimbras de calor prováveis"
@@ -174,8 +243,8 @@ function Dashboard() {
                 color="danger"
               />
             )}
-          {openWeatherMapApi?.main.feels_like > 32 &&
-            openWeatherMapApi?.main.feels_like <= 41 && (
+          {weatherStationData.thermalSensation > 32 &&
+            weatherStationData.thermalSensation <= 41 && (
               <AlertBox
                 title="Sensação térmica superior à 32°C - Muita Atenção"
                 description="Hipertermia e câimbras de calor possíveis"
@@ -183,8 +252,8 @@ function Dashboard() {
                 color="danger"
               />
             )}
-          {openWeatherMapApi?.main.feels_like > 20 &&
-            openWeatherMapApi?.main.feels_like <= 32 && (
+          {weatherStationData.thermalSensation > 27 &&
+            weatherStationData.thermalSensation <= 32 && (
               <AlertBox
                 title="Sensação térmica superior à 27°C - Atenção"
                 description="Possibilidade de fadiga após exposição e atividade prolongadas"
@@ -192,11 +261,19 @@ function Dashboard() {
                 color="warning"
               />
             )}
+          {weatherStationData.thermalSensation <= 27 && (
+            <AlertBox
+              title="Por enquanto você não possui alertas!"
+              description=""
+              link=""
+              color="low"
+            />
+          )}
         </>
       );
     }
     return <> </>;
-  }, [openWeatherMapApi?.main.feels_like]);
+  }, [weatherStationData.thermalSensation]);
 
   return (
     <Container>
@@ -204,7 +281,9 @@ function Dashboard() {
         <WeatherInformation>
           <div>
             <strong>
-              Olá, {user?.email.substring(0, user?.email.lastIndexOf('@'))}
+              {`Olá, ${
+                user && user.name?.substring(0, user.name?.lastIndexOf(' '))
+              }`}
             </strong>
 
             <span>
@@ -260,14 +339,14 @@ function Dashboard() {
         <WeatherStationContent>
           <GridContent>
             <WeatherBox
-              data={openWeatherMapApi?.main.temp}
+              data={weatherStationData.temperature}
               unity="°C"
               name="Temperatura"
               icon={FiThermometer}
               color="#bf746d"
             />
             <WeatherBox
-              data={openWeatherMapApi?.main.humidity}
+              data={weatherStationData.airHumidity}
               unity="%"
               name="Umidade do Ar"
               icon={FiDroplet}
@@ -276,14 +355,14 @@ function Dashboard() {
           </GridContent>
           <GridContent>
             <WeatherBox
-              data={openWeatherMapApi?.main.feels_like}
+              data={weatherStationData.thermalSensation}
               unity="°C"
               name="Sensação Térmica"
               icon={FiThermometer}
               color="#7aa3ae"
             />
             <WeatherBox
-              data={isOnline ? 0 : 0}
+              data={weatherStationData.soilMoisture}
               unity="%"
               name="Umidade do Solo"
               icon={FiDroplet}
@@ -292,14 +371,14 @@ function Dashboard() {
           </GridContent>
           <GridContent>
             <WeatherBox
-              data={isOnline ? 0 : 0}
+              data={weatherStationData.rainfallIndex}
               unity="mm"
               name="Índice Pluviométrico"
               icon={FiCloudDrizzle}
               color="#859aa2"
             />
             <WeatherBox
-              data={isOnline ? 0 : 0}
+              data={weatherStationData.leafWetness}
               unity="%"
               name="Molhamento Foliar"
               icon={FiFeather}
@@ -308,14 +387,14 @@ function Dashboard() {
           </GridContent>
           <GridContent>
             <WeatherBox
-              data={isOnline ? 0 : 0}
+              data={weatherStationData.luminosity}
               unity="Lux"
               name="Luminosidade"
               icon={FiSun}
               color="#d7c27a"
             />
             <WeatherBox
-              data={isOnline ? 0 : 0}
+              data={weatherStationData.ultravioletIndex}
               unity="Uv"
               name="Índice Ultravioleta"
               icon={FiSun}
@@ -324,14 +403,14 @@ function Dashboard() {
           </GridContent>
           <GridContent>
             <WeatherBox
-              data={openWeatherMapApi?.main.grnd_level}
+              data={weatherStationData.atmosphericPressure}
               unity="hpa"
               name="Pressão Atmosférica"
               icon={FiArrowDownCircle}
               color="#7fb2bb"
             />
             <WeatherBox
-              data={openWeatherMapApi?.wind.speed}
+              data={weatherStationData.windSpeed}
               unity="Km/h"
               name="Velocidade do Vento"
               icon={FiWind}
@@ -340,7 +419,7 @@ function Dashboard() {
           </GridContent>
           <GridContent>
             <WeatherBox
-              data={isOnline ? 0 : 0}
+              data={weatherStationData.altitude}
               unity="m"
               name="Altitude"
               icon={FiTrendingUp}

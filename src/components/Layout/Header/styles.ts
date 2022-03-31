@@ -35,8 +35,12 @@ export const Grid = styled.div`
 
     padding: 0 1.5rem;
 
-    background: var(--primaria0);
+    background: var(--primaria2);
     box-shadow: 0.125rem 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+
+    div:nth-child(1) {
+      display: none;
+    }
 
     img:nth-child(3) {
       display: block;
@@ -53,7 +57,7 @@ export const Grid = styled.div`
       opacity: 1;
       pointer-events: all;
 
-      color: var(----light-1);
+      color: var(--light0);
     }
   }
 `;

@@ -15,8 +15,7 @@ import History from '../pages/History';
 import Cult from '../pages/Cult';
 import Config from '../pages/Config';
 
-import CreateUser from '../pages/CreateUser';
-import ListUser from '../pages/ListUser';
+import UserList from '../pages/User/List';
 import Profile from '../pages/Profile';
 
 import NotFound from '../pages/NotFound';
@@ -46,9 +45,8 @@ function Router() {
 
           <Route path="*" element={<NotFound />} />
 
-          <Route element={<AuthRoute roles={['administrator']} />}>
-            <Route path="/users/list" element={<ListUser />} />
-            <Route path="/users/create" element={<CreateUser />} />
+          <Route element={<AuthRoute roles={['gamemaster']} />}>
+            <Route path="/users/list" element={<UserList />} />
           </Route>
         </Route>
 

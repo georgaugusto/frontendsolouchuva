@@ -1,34 +1,27 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import decode from 'jwt-decode';
+import { useContext } from 'react';
+
+import UserIdentificationContext from '../contexts/userIdentification';
 
 interface AuthRouteProps {
   permissions?: string[];
   roles?: string[];
 }
 
-interface UserProps {
-  exp: number;
-  iat: number;
-  permissions: string[];
-  roles: string[];
-  sub: string;
-}
-
 function AuthRoute({ permissions, roles }: AuthRouteProps) {
-  const location = useLocation();
   const token = localStorage.getItem('@SolouChuva:token');
+  const user = useContext(UserIdentificationContext);
+  const location = useLocation();
 
   const userCanAccess = () => {
     if (!token) {
       return false;
     }
 
-    const user: UserProps = decode(token);
-
     if (roles) {
       if (roles.length > 0) {
         const hasAllRoles = roles?.some(role => {
-          return user?.roles.includes(role);
+          return user.roles?.includes(role);
         });
 
         if (!hasAllRoles) {
@@ -40,7 +33,7 @@ function AuthRoute({ permissions, roles }: AuthRouteProps) {
     if (permissions) {
       if (permissions?.length > 0) {
         const hasAllPermissions = permissions?.every(permission => {
-          return user?.permissions.includes(permission);
+          return user.permissions?.includes(permission);
         });
 
         if (!hasAllPermissions) {

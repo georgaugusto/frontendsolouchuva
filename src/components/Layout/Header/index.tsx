@@ -1,18 +1,18 @@
 import { useContext } from 'react';
 import { HiOutlineMenu } from 'react-icons/hi';
 
-import AuthContext from '../../../contexts/auth';
 import LayoutContext from '../../../contexts/layout';
+import UserIdentificationContext from '../../../contexts/userIdentification';
 
 import { Title } from '../Navbar/PageTitle';
 
-import logoImg from '../../../assets/react.svg';
+import logoImg from '../../../assets/logo.svg';
 import userImg from '../../../assets/userProfile.svg';
 
 import { Grid, Menu, StyledLink, Options } from './styles';
 
 export function Header() {
-  const { user } = useContext(AuthContext);
+  const user = useContext(UserIdentificationContext);
   const { navMobile, setNavMobile } = useContext(LayoutContext);
 
   const showNavMobile = () => setNavMobile(!navMobile);
@@ -26,7 +26,7 @@ export function Header() {
           <img src={userImg} alt="" />
         </StyledLink>
 
-        <p>{user?.email.substring(0, user?.email.lastIndexOf('@'))}</p>
+        <p>{user && user.name?.substring(0, user.name?.lastIndexOf(' '))}</p>
 
         <Menu
           className="nav-toggle"

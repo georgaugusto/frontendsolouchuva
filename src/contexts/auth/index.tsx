@@ -13,9 +13,13 @@ import { useNavigate } from 'react-router-dom';
 
 import { api } from '../../services/api';
 import ToastContext from '../toast';
+import UserIdentificationContext from '../userIdentification';
 
 interface UserProps {
   email: string;
+  name?: string;
+  permissions?: Array<string>;
+  roles?: Array<string>;
 }
 
 interface SignInCredentialsProps {
@@ -41,6 +45,10 @@ function AuthContextProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps>();
   const navigate = useNavigate();
   const { addToast } = useContext(ToastContext);
+  const { setEmail, setName, setRoles, setPermissions } = useContext(
+    UserIdentificationContext,
+  );
+
   const isAuthenticated = !!user;
 
   useEffect(() => {
@@ -71,17 +79,25 @@ function AuthContextProvider({ children }: AuthProviderProps) {
           },
         })
         .then(response => {
-          const { email } = response.data;
+          const { email, name, permissions, roles } = response.data;
           setUser({ email });
+          setEmail(email);
+          setName(name);
+          setPermissions(permissions);
+          setRoles(roles);
         })
         .catch(() => {
           window.localStorage.clear();
           setUser(undefined);
+          setEmail('');
+          setName('');
+          setPermissions([]);
+          setRoles([]);
 
           navigate('/', { replace: true });
         });
     }
-  }, [navigate]);
+  }, [navigate, setEmail, setName, setPermissions, setRoles]);
 
   const signIn = useCallback(
     async ({ email, password }: SignInCredentialsProps) => {
@@ -99,6 +115,11 @@ function AuthContextProvider({ children }: AuthProviderProps) {
           email,
         });
 
+        setEmail(email);
+        setName(response.data.user.name);
+        setPermissions(response.data.user.permissions);
+        setRoles(response.data.user.roles);
+
         api.defaults.headers.common.Authorization = `Bearer ${refresh}`;
 
         navigate('/dashboard', { replace: true });
@@ -111,7 +132,7 @@ function AuthContextProvider({ children }: AuthProviderProps) {
         });
       }
     },
-    [navigate, addToast],
+    [navigate, addToast, setEmail, setName, setPermissions, setRoles],
   );
 
   const contextValue = useMemo(

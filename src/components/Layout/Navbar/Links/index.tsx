@@ -16,15 +16,11 @@ export const links = [
     to: '',
     icon: <HiOutlineUserGroup />,
     label: 'Usuários',
-    roles: ['administrator'],
+    roles: ['gamemaster'],
     subLinks: [
       {
         to: '/users/list',
         label: 'Listagem de Usuário',
-      },
-      {
-        to: '/users/create',
-        label: 'Cadastro de Usuário',
       },
     ],
   },
