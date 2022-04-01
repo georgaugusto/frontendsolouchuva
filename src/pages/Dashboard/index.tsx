@@ -157,7 +157,10 @@ function Dashboard() {
           `https://openweathermap.org/img/wn/${response.data.weather[0].icon}.png`,
         );
 
-        const getRain = Object.values(response.data?.rain);
+        const getRain =
+          response.data?.rain !== undefined
+            ? Object.values(response.data?.rain)
+            : [0];
         const rain = getRain[1] ? getRain[1] : getRain[0];
 
         setOpenWeatherMapApiData(response.data);
@@ -166,7 +169,7 @@ function Dashboard() {
           airHumidity: response.data.main.humidity,
           thermalSensation: response.data.main.feels_like,
           soilMoisture: 0,
-          rainfallIndex: getRain ? rain : 0,
+          rainfallIndex: rain,
           leafWetness: 0,
           luminosity: 0,
           ultravioletIndex: 0,
@@ -180,7 +183,7 @@ function Dashboard() {
       }
     }
     if (Number(selectedStation.value) === 1) getWeatherDataByCity();
-  }, [selectedStation.value]);
+  }, [openWeatherMap, state, selectedStation.value]);
 
   useEffect(() => {
     async function getWeatherStationData() {
@@ -212,7 +215,7 @@ function Dashboard() {
       }
     }
     if (Number(selectedStation.value) === 0) getWeatherStationData();
-  }, [selectedStation.value]);
+  }, [token, selectedStation.value]);
 
   const formatTime = useMemo(() => {
     return Intl.DateTimeFormat('pt-BR', {
