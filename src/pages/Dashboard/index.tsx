@@ -176,7 +176,7 @@ function Dashboard() {
           atmosphericPressure: response.data.main.grnd_level,
           windSpeed: response.data.wind.speed,
           altitude: 0,
-          lastRead: response.data.dt,
+          lastRead: response.data.dt * 1000,
         });
       } catch (error) {
         setRequestError(true);
