@@ -30,7 +30,7 @@ export const Container = styled.div`
     > div:nth-child(1) {
       width: 100%;
 
-      padding: 2rem;
+      padding: 1rem;
     }
 
     > div:nth-child(2) {

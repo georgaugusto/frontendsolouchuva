@@ -123,6 +123,12 @@ function AuthContextProvider({ children }: AuthProviderProps) {
         api.defaults.headers.common.Authorization = `Bearer ${refresh}`;
 
         navigate('/dashboard', { replace: true });
+
+        addToast({
+          type: 'info',
+          title: 'Seja compreensivo',
+          description: 'Projeto ainda em produção, não finalizado',
+        });
       } catch (err) {
         console.log(err);
         addToast({
