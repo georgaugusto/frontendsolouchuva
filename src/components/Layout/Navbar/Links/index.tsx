@@ -28,13 +28,13 @@ export const links = [
     to: '/history',
     icon: <RiHistoryLine />,
     label: 'Histórico',
-    roles: ['user'],
+    roles: ['gamemaster'],
   },
   {
     to: '/cult',
     icon: <RiPlantLine />,
     label: 'Culturas',
-    roles: ['user'],
+    roles: ['gamemaster'],
   },
   {
     to: '/config',
