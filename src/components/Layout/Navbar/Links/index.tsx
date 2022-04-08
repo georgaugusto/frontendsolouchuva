@@ -34,7 +34,7 @@ export const links = [
     to: '/cult',
     icon: <RiPlantLine />,
     label: 'Culturas',
-    roles: ['gamemaster'],
+    roles: ['user'],
   },
   {
     to: '/config',

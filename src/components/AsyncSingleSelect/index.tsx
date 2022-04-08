@@ -79,6 +79,7 @@ function AsyncSingleSelect({ optionsData, ...rest }: any) {
       <AsyncSelect
         cacheOptions
         defaultOptions
+        isClearable
         loadOptions={loadOptions}
         styles={customStyles}
         isSearchable={false}
