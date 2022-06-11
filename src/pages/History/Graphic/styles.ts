@@ -25,4 +25,12 @@ export const Container = styled.div<StyledGraphicType>`
   @media (max-width: 1023px) {
     width: calc(100vw - 4rem - 4rem);
   }
+
+  @media (max-width: 425px) {
+    width: calc(100vw - 5.5rem);
+
+    svg {
+      margin-left: -2rem;
+    }
+  }
 `;
