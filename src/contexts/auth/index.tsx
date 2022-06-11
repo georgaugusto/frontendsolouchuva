@@ -126,7 +126,7 @@ function AuthContextProvider({ children }: AuthProviderProps) {
 
         addToast({
           type: 'info',
-          title: 'Seja compreensivo',
+          title: 'Seja compreensivo!',
           description: 'Projeto ainda em produção, não finalizado',
         });
       } catch (err) {

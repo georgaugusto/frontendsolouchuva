@@ -73,8 +73,6 @@ function Config() {
     initMap();
   }, [initMap]);
 
-  //initMap();
-
   return (
     <Container>
       <div>

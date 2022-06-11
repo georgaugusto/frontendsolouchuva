@@ -15,6 +15,38 @@ export const Container = styled.div`
   }
 `;
 
+export const CultHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  padding-bottom: 2rem;
+
+  strong {
+    font-family: Mulish;
+    font-style: normal;
+    font-size: 1.25rem;
+
+    padding-bottom: 0.25rem;
+  }
+
+  p {
+    font-family: Mulish;
+    font-style: normal;
+    font-weight: 400;
+  }
+`;
+
+export const CultBody = styled.div`
+  display: flex;
+  flex-direction: row;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
 export const SidebarCultures = styled.div`
   width: 30%;
   height: calc(100vh - 364px);
@@ -61,6 +93,24 @@ export const SidebarCultures = styled.div`
     > div:nth-child(3) {
       width: 100%;
     }
+  }
+`;
+
+export const DiseaseListName = styled.span`
+  font-family: 'Mulish';
+  font-style: normal;
+  font-weight: 400;
+
+  &:hover {
+    font-family: 'Mulish';
+    font-style: bold;
+    font-weight: 700 !important;
+  }
+
+  &:active {
+    font-family: 'Mulish';
+    font-style: normal;
+    font-weight: 700 !important;
   }
 `;
 
@@ -122,63 +172,7 @@ export const DescriptionCultures = styled.div`
   }
 `;
 
-export const DiseaseListName = styled.span`
-  font-family: 'Mulish';
-  font-style: normal;
-  font-weight: 400;
-
-  &:hover {
-    font-family: 'Mulish';
-    font-style: bold;
-    font-weight: 700 !important;
-  }
-
-  &:active {
-    font-family: 'Mulish';
-    font-style: normal;
-    font-weight: 700 !important;
-  }
-`;
-
-export const CultHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-
-  padding-bottom: 2rem;
-
-  strong {
-    font-family: Mulish;
-    font-style: normal;
-    font-size: 1.25rem;
-
-    padding-bottom: 0.25rem;
-  }
-
-  p {
-    font-family: Mulish;
-    font-style: normal;
-    font-weight: 400;
-  }
-`;
-
-export const CultBody = styled.div`
-  display: flex;
-  flex-direction: row;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
-`;
-
 export const NoDescription = styled.span`
-  font-family: Mulish;
-  font-style: normal;
-  font-weight: 400;
-`;
-
-export const NoHave = styled.span`
   font-family: Mulish;
   font-style: normal;
   font-weight: 400;

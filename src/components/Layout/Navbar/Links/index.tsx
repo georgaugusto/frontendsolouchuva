@@ -28,7 +28,7 @@ export const links = [
     to: '/history',
     icon: <RiHistoryLine />,
     label: 'Histórico',
-    roles: ['gamemaster'],
+    roles: ['user'],
   },
   {
     to: '/cult',

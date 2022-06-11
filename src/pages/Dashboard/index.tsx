@@ -108,12 +108,132 @@ interface IOpenWeatherMapData {
   cod: number; //Internal parameter
 }
 
+interface IOpenWeatherMapAPI3Data {
+  lat: number; //City geo location, latitude
+  lon: number; //City geo location, longitude
+  timezone: number; //Shift in seconds from UTC
+  timezone_offset: number;
+  current?: {
+    dt: number;
+    sunrise: number;
+    sunset: number;
+    temp: number;
+    feels_like: number;
+    pressure: number;
+    humidity: number;
+    dew_point: number;
+    uvi: number;
+    clouds: number;
+    visibility: number;
+    wind_speed: number;
+    wind_deg: number;
+    wind_gust: number;
+    rain?: {
+      '1h': number;
+    };
+    snow?: {
+      '1h': number;
+    };
+    weather: [
+      {
+        id: number;
+        main: string;
+        description: string;
+        icon: string;
+      },
+    ];
+  };
+  minutely?: [
+    {
+      dt: number;
+      precipitation: number;
+    },
+  ];
+  hourly?: [
+    {
+      dt: number;
+      temp: number;
+      feels_like: number;
+      pressure: number;
+      humidity: number;
+      dew_point: number;
+      uvi: number;
+      clouds: number;
+      visibility: number;
+      wind_speed: number;
+      wind_deg: number;
+      wind_gust: number;
+      weather: [
+        {
+          id: number;
+          main: string;
+          description: string;
+          icon: string;
+        },
+      ];
+      pop: number;
+    },
+  ];
+  daily?: [
+    {
+      dt: number;
+      sunrise: number;
+      sunset: number;
+      moonrise: number;
+      moonset: number;
+      moon_phase: number;
+      temp: {
+        day: number;
+        min: number;
+        max: number;
+        night: number;
+        eve: number;
+        morn: number;
+      };
+      feels_like: {
+        day: number;
+        night: number;
+        eve: number;
+        morn: number;
+      };
+      pressure: number;
+      humidity: number;
+      dew_point: number;
+      wind_speed: number;
+      wind_deg: number;
+      wind_gust: number;
+      weather: [
+        {
+          id: number;
+          main: string;
+          description: string;
+          icon: string;
+        },
+      ];
+      clouds: number;
+      pop: number;
+      rain: number;
+      uvi: number;
+    },
+  ];
+  alerts?: [
+    {
+      sender_name: string;
+      event: string;
+      start: number;
+      end: number;
+      description: string;
+      tags: string[];
+    },
+  ];
+}
+
 function Dashboard() {
   const user = useContext(UserIdentificationContext);
   const token = localStorage.getItem('@SolouChuva:token');
   const { setHeaderTitle } = useContext(HeaderTitleContext);
   const [openWeatherMapApi, setOpenWeatherMapApiData] =
-    useState<IOpenWeatherMapData>();
+    useState<IOpenWeatherMapAPI3Data>();
   const [getState, setGetState] = useState('assis');
   const [state, setState] = useState('assis');
   const [openWeatherMapApiIcon, setOpenWeatherMapApiIcon] = useState<any>();
@@ -150,33 +270,34 @@ function Dashboard() {
   useEffect(() => {
     async function getWeatherDataByCity() {
       try {
-        const response = await axios.get(
-          `https://api.openweathermap.org/data/2.5/weather?q=${state}&units=metric&lang=pt_br&appid=${openWeatherMap}`,
+        const response = await axios.get<IOpenWeatherMapAPI3Data>(
+          `https://api.openweathermap.org/data/3.0/onecall?lat=-22.63807&lon=-50.407451&units=metric&lang=pt_br&appid=${openWeatherMap}`,
         );
+
         setOpenWeatherMapApiIcon(
-          `https://openweathermap.org/img/wn/${response.data.weather[0].icon}.png`,
+          `https://openweathermap.org/img/wn/${response.data.current?.weather[0].icon}.png`,
         );
 
         const getRain =
-          response.data?.rain !== undefined
-            ? Object.values(response.data?.rain)
+          response.data.current?.rain !== undefined
+            ? Object.values(response.data.current?.rain)
             : [0];
         const rain = getRain[1] ? getRain[1] : getRain[0];
 
         setOpenWeatherMapApiData(response.data);
         setWeatherStationData({
-          temperature: response.data.main.temp,
-          airHumidity: response.data.main.humidity,
-          thermalSensation: response.data.main.feels_like,
-          soilMoisture: 0,
+          temperature: response.data.current?.temp,
+          airHumidity: response.data.current?.humidity,
+          thermalSensation: response.data.current?.feels_like,
+          soilMoisture: '-',
           rainfallIndex: rain,
-          leafWetness: 0,
-          luminosity: 0,
-          ultravioletIndex: 0,
-          atmosphericPressure: response.data.main.grnd_level,
-          windSpeed: response.data.wind.speed,
-          altitude: 0,
-          lastRead: response.data.dt * 1000,
+          leafWetness: '-',
+          luminosity: '-',
+          ultravioletIndex: response.data.current?.uvi,
+          atmosphericPressure: response.data.current?.pressure,
+          windSpeed: response.data.current?.wind_speed,
+          altitude: '-',
+          lastRead: response.data.current!.dt * 1000,
         });
       } catch (error) {
         setRequestError(true);
@@ -297,7 +418,7 @@ function Dashboard() {
 
             <div>
               <img src={openWeatherMapApiIcon} alt="" />
-              <p>{openWeatherMapApi?.weather[0].description}</p>
+              <p>{openWeatherMapApi?.current?.weather[0].description}</p>
             </div>
           </div>
         </WeatherInformation>
@@ -366,7 +487,9 @@ function Dashboard() {
             />
             <WeatherBox
               data={weatherStationData.soilMoisture}
-              unity="%"
+              unity={
+                typeof weatherStationData.soilMoisture === 'string' ? '' : '%'
+              }
               name="Umidade do Solo"
               icon={FiDroplet}
               color="#8a8786"
@@ -382,7 +505,9 @@ function Dashboard() {
             />
             <WeatherBox
               data={weatherStationData.leafWetness}
-              unity="%"
+              unity={
+                typeof weatherStationData.leafWetness === 'string' ? '' : '%'
+              }
               name="Molhamento Foliar"
               icon={FiFeather}
               color="#718b7d"
@@ -391,7 +516,9 @@ function Dashboard() {
           <GridContent>
             <WeatherBox
               data={weatherStationData.luminosity}
-              unity="Lux"
+              unity={
+                typeof weatherStationData.leafWetness === 'string' ? '' : 'Lux'
+              }
               name="Luminosidade"
               icon={FiSun}
               color="#d7c27a"
@@ -423,7 +550,9 @@ function Dashboard() {
           <GridContent>
             <WeatherBox
               data={weatherStationData.altitude}
-              unity="m"
+              unity={
+                typeof weatherStationData.leafWetness === 'string' ? '' : 'm'
+              }
               name="Altitude"
               icon={FiTrendingUp}
               color="#947c95"
