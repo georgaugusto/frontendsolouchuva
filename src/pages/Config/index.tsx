@@ -14,6 +14,8 @@ function Config() {
 
   const { setHeaderTitle } = useContext(HeaderTitleContext);
 
+  const googleApi = process.env.REACT_APP_API_GOOGLE;
+
   const [selectedStation, setSelectedStation] = useState({
     value: '0',
     label: `Protótipo 0 - Larangeiras ${isOnline ? '' : '(Offline)'}`,
@@ -32,7 +34,7 @@ function Config() {
   }, [setHeaderTitle]);
 
   const loader = new Loader({
-    apiKey: 'AIzaSyDvPBmiq6B2HzI4HmJR9kUwXereruQYcIs',
+    apiKey: googleApi!,
     version: 'weekly',
     libraries: ['places'],
   });
