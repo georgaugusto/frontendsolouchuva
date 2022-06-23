@@ -12,7 +12,6 @@ import {
   FiArrowDownCircle,
   FiTrendingUp,
 } from 'react-icons/fi';
-import 'pure-react-carousel/dist/react-carousel.es.css';
 
 import axios from 'axios';
 
