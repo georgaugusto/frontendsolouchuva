@@ -36,6 +36,9 @@ function Cult() {
   }, [setHeaderTitle]);
 
   function getDiseaseList() {
+    if (Number(selectedCult?.value) !== 2) {
+      return <DiseaseListName>Doenças ainda não cadastradas</DiseaseListName>;
+    }
     return Diseases.map(disease => {
       if (Number(selectedCult?.value) === disease.cult) {
         return (

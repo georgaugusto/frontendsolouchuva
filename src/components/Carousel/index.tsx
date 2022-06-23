@@ -1,4 +1,8 @@
-import { CarouselProvider, Slider, Slide } from 'pure-react-carousel';
+/*eslint-disable import/no-unresolved */
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/pagination';
 import { useMemo, useState } from 'react';
 import {
   FiWind,
@@ -20,7 +24,12 @@ import {
   LastWeatherReading,
 } from './styles';
 
-function WeatherCarousel({ optionsData, onChange, value }: any) {
+function WeatherCarousel({
+  optionsData,
+  weatherStationData,
+  onChange,
+  value,
+}: any) {
   const [isOnline, setisOnline] = useState<boolean>(false);
 
   const formatTime = useMemo(() => {
@@ -28,8 +37,8 @@ function WeatherCarousel({ optionsData, onChange, value }: any) {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-    }).format(new Date());
-  }, []);
+    }).format(weatherStationData.lastRead);
+  }, [weatherStationData.lastRead]);
 
   return (
     <CarouselContainer>
@@ -41,119 +50,133 @@ function WeatherCarousel({ optionsData, onChange, value }: any) {
         />
       </WeatherStationHeader>
 
-      <CarouselProvider
-        naturalSlideWidth={100}
-        naturalSlideHeight={66}
-        totalSlides={11}
-        visibleSlides={1}
-        currentSlide={1}
-      >
-        <Slider>
-          <Slide index={0}>
+      <div>
+        <Swiper
+          slidesPerView="auto"
+          centeredSlides
+          loop
+          loopFillGroupWithBlank
+          grabCursor
+          spaceBetween={20}
+          pagination={{
+            clickable: true,
+          }}
+          className="mySwiper"
+        >
+          <SwiperSlide>
             <WeatherBox
-              data={0}
+              data={weatherStationData.temperature}
               unity="°C"
               name="Temperatura"
               icon={FiThermometer}
               color="#bf746d"
             />
-          </Slide>
-          <Slide index={1}>
+          </SwiperSlide>
+          <SwiperSlide>
             <WeatherBox
-              data={0}
+              data={weatherStationData.airHumidity}
               unity="%"
               name="Umidade do Ar"
               icon={FiDroplet}
               color="#d19f89"
             />
-          </Slide>
-          <Slide index={2}>
+          </SwiperSlide>
+          <SwiperSlide>
             <WeatherBox
-              data={0}
+              data={weatherStationData.thermalSensation}
               unity="°C"
               name="Sensação Térmica"
               icon={FiThermometer}
               color="#7aa3ae"
             />
-          </Slide>
-          <Slide index={3}>
+          </SwiperSlide>
+          <SwiperSlide>
             <WeatherBox
-              data={0}
-              unity="%"
+              data={weatherStationData.soilMoisture}
+              unity={
+                typeof weatherStationData.soilMoisture === 'string' ? '' : '%'
+              }
               name="Umidade do Solo"
               icon={FiDroplet}
               color="#8a8786"
             />
-          </Slide>
-          <Slide index={4}>
+          </SwiperSlide>
+          <SwiperSlide>
             <WeatherBox
-              data={0}
+              data={weatherStationData.rainfallIndex}
               unity="mm"
               name="Índice Pluviométrico"
               icon={FiCloudDrizzle}
               color="#859aa2"
             />
-          </Slide>
-          <Slide index={5}>
+          </SwiperSlide>
+          <SwiperSlide>
             <WeatherBox
-              data={0}
-              unity="%"
+              data={weatherStationData.leafWetness}
+              unity={
+                typeof weatherStationData.leafWetness === 'string' ? '' : '%'
+              }
               name="Molhamento Foliar"
               icon={FiFeather}
               color="#718b7d"
             />
-          </Slide>
-          <Slide index={6}>
+          </SwiperSlide>
+          <SwiperSlide>
             <WeatherBox
-              data={0}
-              unity="Lux"
+              data={weatherStationData.luminosity}
+              unity={
+                typeof weatherStationData.leafWetness === 'string' ? '' : 'Lux'
+              }
               name="Luminosidade"
               icon={FiSun}
               color="#d7c27a"
             />
-          </Slide>
-          <Slide index={7}>
+          </SwiperSlide>
+          <SwiperSlide>
             <WeatherBox
-              data={0}
+              data={weatherStationData.ultravioletIndex}
               unity="Uv"
               name="Índice Ultravioleta"
               icon={FiSun}
               color="#a19583"
             />
-          </Slide>
-          <Slide index={8}>
+          </SwiperSlide>
+          <SwiperSlide>
             <WeatherBox
-              data={0}
+              data={weatherStationData.atmosphericPressure}
               unity="hpa"
               name="Pressão Atmosférica"
               icon={FiArrowDownCircle}
               color="#7fb2bb"
             />
-          </Slide>
-          <Slide index={9}>
+          </SwiperSlide>
+          <SwiperSlide>
             <WeatherBox
-              data={0}
+              data={weatherStationData.windSpeed}
               unity="Km/h"
               name="Velocidade do Vento"
               icon={FiWind}
               color="#9f9394"
             />
-          </Slide>
-          <Slide index={10}>
+          </SwiperSlide>
+          <SwiperSlide>
             <WeatherBox
-              data={0}
-              unity="m"
+              data={weatherStationData.altitude}
+              unity={
+                typeof weatherStationData.leafWetness === 'string' ? '' : 'm'
+              }
               name="Altitude"
               icon={FiTrendingUp}
               color="#947c95"
             />
-          </Slide>
-        </Slider>
-      </CarouselProvider>
+          </SwiperSlide>
+        </Swiper>
+      </div>
+
       <LastWeatherReading>
         <div>
           <strong>Última Leitura</strong>
-          <p>{isOnline ? formatTime : '00:00:00'}</p>
+          <p>{formatTime}</p>
         </div>
       </LastWeatherReading>
     </CarouselContainer>

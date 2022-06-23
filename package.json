@@ -12,7 +12,6 @@
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.3",
     "polished": "^4.1.4",
-    "pure-react-carousel": "^1.28.1",
     "react": "^17.0.2",
     "react-datetime": "^3.1.1",
     "react-dom": "^17.0.2",
@@ -26,6 +25,7 @@
     "react-tooltip": "^4.2.21",
     "recharts": "^2.1.10",
     "styled-components": "^5.3.3",
+    "swiper": "^8.2.4",
     "uuidv4": "^6.2.12",
     "yup": "^0.32.11"
   },

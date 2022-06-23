@@ -11,7 +11,7 @@ export const Container = styled.div`
   padding: 2rem;
 
   @media (max-width: 768px) {
-    padding: 1rem;
+    padding: 1.5rem;
   }
 `;
 
@@ -60,7 +60,10 @@ export const SidebarCultures = styled.div`
   > div:nth-child(3) {
     display: flex;
     flex-direction: column;
-    max-height: 100%;
+    height: 100%;
+
+    background: #edeef4;
+    border-radius: 0.75rem;
 
     overflow-y: auto;
 
@@ -69,6 +72,7 @@ export const SidebarCultures = styled.div`
       font-style: normal;
       font-weight: 400;
 
+      margin: 0 0.5rem;
       margin-bottom: 0.5rem;
 
       color: var(--secundaria0);

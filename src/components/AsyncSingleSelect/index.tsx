@@ -58,6 +58,12 @@ const customStyles: StylesConfig = {
     fontWeight: 'normal',
     color: state.isDisabled ? '#b5b5b5' : '#979191',
   }),
+
+  menu: (provided, state) => ({
+    ...provided,
+    fontWeight: 'normal',
+    zIndex: 9999,
+  }),
 };
 
 function AsyncSingleSelect({ optionsData, ...rest }: any) {

@@ -35,7 +35,7 @@ export const WeatherInformation = styled.div`
 
     margin: 27px;
 
-    strong {
+    > strong {
       margin-bottom: 12px;
       font-style: normal;
 
@@ -44,7 +44,7 @@ export const WeatherInformation = styled.div`
       color: #c45a01;
     }
 
-    span {
+    > span {
       font-family: Mulish;
       font-style: normal;
       font-weight: normal;
@@ -55,7 +55,7 @@ export const WeatherInformation = styled.div`
       color: #bd5600;
     }
 
-    div {
+    > div {
       display: flex;
       flex-direction: row;
 
@@ -146,6 +146,8 @@ export const WeatherAlertsBody = styled.div`
   }
 
   @media (max-width: 768px) {
+    padding: 1rem 0.5rem;
+
     > strong {
       margin: 0.75rem;
     }

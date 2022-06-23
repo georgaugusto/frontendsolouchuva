@@ -1,3 +1,4 @@
+/*eslint-disable import/no-unresolved */
 /*eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -12,6 +13,7 @@ import {
   FiTrendingUp,
 } from 'react-icons/fi';
 import 'pure-react-carousel/dist/react-carousel.es.css';
+
 import axios from 'axios';
 
 import HeaderTitleContext from '../../contexts/headerTitle';
@@ -425,6 +427,7 @@ function Dashboard() {
 
         <WeatherCarousel
           optionsData={optionsData}
+          weatherStationData={weatherStationData}
           onChange={setSelectedStation}
           value={selectedStation}
         />
